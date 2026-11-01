@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đi Tu Online – Chùa An Nhiên</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div><div class="eyebrow">THẾ GIỚI BÌNH AN</div><h1>🪷 Đi Tu Online</h1><p>Chùa An Nhiên · Gặp gỡ và tu tập cùng mọi người</p></div>
+      <div class="online"><span class="dot"></span><b id="onlineCount">0</b> người đang online</div>
+    </header>
+    <section id="login" class="login">
+      <h2>Chào mừng đến Chùa An Nhiên</h2>
+      <p>Hãy chọn pháp danh để bước vào thế giới chung.</p>
+      <form id="joinForm"><input id="nameInput" maxlength="18" placeholder="Nhập tên nhân vật..." required><button>Vào chùa</button></form>
+    </section>
+    <section id="game" class="game hidden">
+      <div class="world-wrap">
+        <div class="world-label">🏯 SÂN CHÙA AN NHIÊN</div>
+        <canvas id="world" width="840" height="600" aria-label="Thế giới game"></canvas>
+        <div class="hint">Dùng phím WASD / phím mũi tên hoặc chạm vào sân chùa để di chuyển.</div>
+      </div>
+      <aside class="side">
+        <h3>💬 Trò chuyện</h3>
+        <div id="messages" class="messages"><div class="system">Chào mừng bạn đến với Chùa An Nhiên.</div></div>
+        <form id="chatForm" class="chat-form"><input id="chatInput" maxlength="180" placeholder="Gửi lời chúc bình an..."><button>Gửi</button></form>
+        <div class="side-note">🌿 Hãy trò chuyện nhẹ nhàng và tôn trọng mọi người.</div>
+      </aside>
+    </section>
+    <footer>Phiên bản thử nghiệm · Chùa An Nhiên</footer>
+  </main>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/game.js"></script>
+</body>
+</html>
