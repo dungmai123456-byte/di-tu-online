@@ -9,27 +9,110 @@ const players = new Map();
 const keys = new Set();
 let myId = null, joined = false, scene, camera, renderer, clock, me;
 let audioCtx = null, masterGain = null, ambienceTimer = null, soundOn = true, controls = null;
+// Âm thanh chim hót từ file MP3
+const birdSound = new Audio('/chim-hot.mp3');
+birdSound.loop = true;
+birdSound.volume = 0.15;
 const WORLD_W = 840, WORLD_D = 600, movers = [];
 
-// --- Âm thanh tạo trực tiếp bằng Web Audio, không cần tải tệp âm thanh ---
+// --- Âm thanh tạo trực tiếp bằng Web Audio ---
 function startAudio(){
-  if(!audioCtx){audioCtx=new (window.AudioContext||window.webkitAudioContext)();masterGain=audioCtx.createGain();masterGain.gain.value=.24;masterGain.connect(audioCtx.destination);}
-  if(audioCtx.state==='suspended') audioCtx.resume();
-  soundOn=true; masterGain.gain.setTargetAtTime(.24,audioCtx.currentTime,.2);
-  if(!ambienceTimer){
-    const drone=audioCtx.createOscillator(), filter=audioCtx.createBiquadFilter(), gain=audioCtx.createGain();
-    drone.type='sine';drone.frequency.value=110;filter.type='lowpass';filter.frequency.value=260;gain.gain.value=.025;
-    drone.connect(filter);filter.connect(gain);gain.connect(masterGain);drone.start();
-    // Tiếng gió/nước rất nhẹ bằng nhiễu lọc tần số thấp.
-    const noiseBuffer=audioCtx.createBuffer(1,audioCtx.sampleRate*2,audioCtx.sampleRate),noiseData=noiseBuffer.getChannelData(0);for(let i=0;i<noiseData.length;i++)noiseData[i]=Math.random()*2-1;
-    const wind=audioCtx.createBufferSource(),windFilter=audioCtx.createBiquadFilter(),windGain=audioCtx.createGain();wind.buffer=noiseBuffer;wind.loop=true;windFilter.type='lowpass';windFilter.frequency.value=380;windGain.gain.value=.012;wind.connect(windFilter);windFilter.connect(windGain);windGain.connect(masterGain);wind.start();
-    const stream=audioCtx.createBufferSource(),streamFilter=audioCtx.createBiquadFilter(),streamGain=audioCtx.createGain();stream.buffer=noiseBuffer;stream.loop=true;streamFilter.type='bandpass';streamFilter.frequency.value=900;streamFilter.Q.value=.4;streamGain.gain.value=.006;stream.connect(streamFilter);streamFilter.connect(streamGain);streamGain.connect(masterGain);stream.start();
-    ambienceTimer=setInterval(()=>{if(soundOn)birdCall();},8500+Math.random()*6500);
-    birdCall();
+  if(!audioCtx){
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    masterGain = audioCtx.createGain();
+    masterGain.gain.value = .24;
+    masterGain.connect(audioCtx.destination);
   }
-  document.getElementById('soundToggle').textContent='🔊 Âm thanh: Bật';
+
+  if(audioCtx.state === 'suspended') audioCtx.resume();
+
+  soundOn = true;
+  masterGain.gain.setTargetAtTime(.24, audioCtx.currentTime, .2);
+
+  birdSound.play().catch(error => {
+    console.log('Chưa phát được tiếng chim:', error);
+  });
+
+  if(!ambienceTimer){
+    const drone = audioCtx.createOscillator();
+    const filter = audioCtx.createBiquadFilter();
+    const gain = audioCtx.createGain();
+
+    drone.type = 'sine';
+    drone.frequency.value = 110;
+    filter.type = 'lowpass';
+    filter.frequency.value = 260;
+    gain.gain.value = .025;
+
+    drone.connect(filter);
+    filter.connect(gain);
+    gain.connect(masterGain);
+    drone.start();
+
+    const noiseBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 2, audioCtx.sampleRate);
+    const noiseData = noiseBuffer.getChannelData(0);
+
+    for(let i = 0; i < noiseData.length; i++){
+      noiseData[i] = Math.random() * 2 - 1;
+    }
+
+    const wind = audioCtx.createBufferSource();
+    const windFilter = audioCtx.createBiquadFilter();
+    const windGain = audioCtx.createGain();
+
+    wind.buffer = noiseBuffer;
+    wind.loop = true;
+    windFilter.type = 'lowpass';
+    windFilter.frequency.value = 380;
+    windGain.gain.value = .012;
+
+    wind.connect(windFilter);
+    windFilter.connect(windGain);
+    windGain.connect(masterGain);
+    wind.start();
+
+    const stream = audioCtx.createBufferSource();
+    const streamFilter = audioCtx.createBiquadFilter();
+    const streamGain = audioCtx.createGain();
+
+    stream.buffer = noiseBuffer;
+    stream.loop = true;
+    streamFilter.type = 'bandpass';
+    streamFilter.frequency.value = 900;
+    streamFilter.Q.value = .4;
+    streamGain.gain.value = .006;
+
+    stream.connect(streamFilter);
+    streamFilter.connect(streamGain);
+    streamGain.connect(masterGain);
+    stream.start();
+    ambienceTimer = true;
+  }
+
+  document.getElementById('soundToggle').textContent = '🔊 Âm thanh: Bật';
 }
-function toggleSound(){if(!audioCtx)startAudio();else{soundOn=!soundOn;masterGain.gain.setTargetAtTime(soundOn?.24:0,audioCtx.currentTime,.15);document.getElementById('soundToggle').textContent=soundOn?'🔊 Âm thanh: Bật':'🔇 Âm thanh: Tắt';}}
+function toggleSound(){
+  if(!audioCtx){
+    startAudio();
+    return;
+  }
+
+  soundOn = !soundOn;
+  masterGain.gain.setTargetAtTime(
+    soundOn ? .24 : 0,
+    audioCtx.currentTime,
+    .15
+  );
+
+  if(soundOn){
+    birdSound.play().catch(error => console.log(error));
+  }else{
+    birdSound.pause();
+  }
+
+  document.getElementById('soundToggle').textContent =
+    soundOn ? '🔊 Âm thanh: Bật' : '🔇 Âm thanh: Tắt';
+}
 function bell(){if(!audioCtx)startAudio();if(!soundOn)return;[0,1,2].forEach((n)=>{const o=audioCtx.createOscillator(),g=audioCtx.createGain();const t=audioCtx.currentTime+n*.12;o.type='sine';o.frequency.setValueAtTime(660-n*85,t);o.frequency.exponentialRampToValueAtTime(180,t+3.2);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.22/(n+1),t+.025);g.gain.exponentialRampToValueAtTime(.0001,t+3.4);o.connect(g);g.connect(masterGain);o.start(t);o.stop(t+3.5);});}
 function birdCall(){if(!audioCtx||!soundOn)return;for(let i=0;i<2;i++){const o=audioCtx.createOscillator(),g=audioCtx.createGain();const t=audioCtx.currentTime+i*.18;o.type='sine';o.frequency.setValueAtTime(1700+Math.random()*500,t);o.frequency.exponentialRampToValueAtTime(1150,t+.13);g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(.045,t+.025);g.gain.exponentialRampToValueAtTime(.0001,t+.16);o.connect(g);g.connect(masterGain);o.start(t);o.stop(t+.17);}}
 function footstep(){if(!audioCtx||!soundOn)return;const n=audioCtx.createBufferSource(),len=.07,buf=audioCtx.createBuffer(1,audioCtx.sampleRate*len,audioCtx.sampleRate),d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*(1-i/d.length);n.buffer=buf;const f=audioCtx.createBiquadFilter(),g=audioCtx.createGain();f.type='lowpass';f.frequency.value=170;g.gain.value=.09;n.connect(f);f.connect(g);g.connect(masterGain);n.start();}
