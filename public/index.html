@@ -3,36 +3,57 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Đi Tu Online – Chùa An Nhiên</title>
+  <title>Đi Tu Online – Chùa An Nhiên 3D</title>
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
   <main class="shell">
     <header>
-      <div><div class="eyebrow">THẾ GIỚI BÌNH AN</div><h1>🪷 Đi Tu Online</h1><p>Chùa An Nhiên · Gặp gỡ và tu tập cùng mọi người</p></div>
+      <div><div class="eyebrow">THẾ GIỚI BÌNH AN</div><h1>🪷 Đi Tu Online</h1><p>Chùa An Nhiên · Không gian tu tập 3D cùng mọi người</p></div>
       <div class="online"><span class="dot"></span><b id="onlineCount">0</b> người đang online</div>
     </header>
     <section id="login" class="login">
+      <div class="lotus">🪷</div>
       <h2>Chào mừng đến Chùa An Nhiên</h2>
-      <p>Hãy chọn pháp danh để bước vào thế giới chung.</p>
+      <p>Hãy chọn pháp danh để bước vào thế giới 3D.</p>
       <form id="joinForm"><input id="nameInput" maxlength="18" placeholder="Nhập tên nhân vật..." required><button>Vào chùa</button></form>
+      <small>Âm thanh sẽ được kích hoạt sau khi bạn vào chùa.</small>
     </section>
     <section id="game" class="game hidden">
       <div class="world-wrap">
-        <div class="world-label">🏯 SÂN CHÙA AN NHIÊN</div>
-        <canvas id="world" width="840" height="600" aria-label="Thế giới game"></canvas>
-        <div class="hint">Dùng phím WASD / phím mũi tên hoặc chạm vào sân chùa để di chuyển.</div>
+        <div class="world-top"><div class="world-label">🏯 SÂN CHÙA AN NHIÊN · KHÔNG GIAN 3D</div><div class="sound-controls"><button id="soundToggle" class="soft-button">🔊 Âm thanh: Bật</button><button id="bellButton" class="soft-button">🔔 Thỉnh chuông</button></div></div>
+        <div id="world" aria-label="Thế giới game 3D"></div>
+        <div class="hint">Di chuyển bằng WASD / phím mũi tên hoặc chạm vào mặt đất. Kéo chuột để xoay góc nhìn, cuộn để phóng to/thu nhỏ.</div>
       </div>
       <aside class="side">
+        <section class="merit-card">
+          <div class="merit-heading">🪷 Công đức của bạn</div>
+          <div class="merit-score"><span id="myScore">0</span><small>điểm</small></div>
+          <div class="merit-help">Đến gần từng khu vực rồi chọn hoạt động. Mỗi hoạt động được +5 điểm.</div>
+        </section>
+        <section class="activities">
+          <h3>🙏 Hoạt động tại chùa</h3>
+          <button class="activity-button" data-action="incense">🕯️ Thắp hương <b>+5</b><small>Khu vực bàn hương án</small></button>
+          <button class="activity-button" data-action="sutra">📿 Tụng kinh <b>+5</b><small>Trước chính điện</small></button>
+          <button class="activity-button" data-action="fish">🐟 Cho cá ăn <b>+5</b><small>Bên hồ sen</small></button>
+          <button class="activity-button" data-action="merit">🌼 Làm công đức <b>+5</b><small>Sân chùa</small></button>
+          <div id="actionNotice" class="action-notice" aria-live="polite">Hãy đến gần khu vực hoạt động để tương tác.</div>
+        </section>
+        <section class="leaderboard-card">
+          <h3>🏆 Bảng xếp hạng công đức</h3>
+          <div id="myRank" class="my-rank">Cấp bậc: Người mới nhập môn</div>
+          <ol id="leaderboard" class="leaderboard"><li>Chưa có dữ liệu</li></ol>
+          <small class="rank-note">Cấp bậc tăng theo tổng điểm tích lũy.</small>
+        </section>
         <h3>💬 Trò chuyện</h3>
         <div id="messages" class="messages"><div class="system">Chào mừng bạn đến với Chùa An Nhiên.</div></div>
         <form id="chatForm" class="chat-form"><input id="chatInput" maxlength="180" placeholder="Gửi lời chúc bình an..."><button>Gửi</button></form>
         <div class="side-note">🌿 Hãy trò chuyện nhẹ nhàng và tôn trọng mọi người.</div>
       </aside>
     </section>
-    <footer>Phiên bản thử nghiệm · Chùa An Nhiên</footer>
+    <footer>Đi Tu Online · Chùa An Nhiên · Bản thử nghiệm 3D</footer>
   </main>
   <script src="/socket.io/socket.io.js"></script>
-  <script src="/game.js"></script>
+  <script type="module" src="/game.js"></script>
 </body>
 </html>
