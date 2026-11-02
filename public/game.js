@@ -10,7 +10,7 @@ const keys = new Set();
 let myId = null, joined = false, scene, camera, renderer, clock, me;
 let audioCtx = null, masterGain = null, ambienceTimer = null, soundOn = true, controls = null;
 // Âm thanh chim hót từ file MP3
-const birdSound = new Audio('/chim-hot.mp3');
+const birdSound = new Audio('/chim-hot.mp3.mp3');
 birdSound.loop = true;
 birdSound.volume = 0.15;
 const WORLD_W = 840, WORLD_D = 600, movers = [];
